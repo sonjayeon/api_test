@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.api_test.dao.MemberRepository">
+    <insert id="insertMember" parameterType="com.example.api_test.domain.MemberEntity">
+        insert into
+            member (
+                id,
+                password,
+                name,
+                registDateTime,
+                modifyDateTime,
+                gender,
+                dating,
+                introduce
+        ) values (
+                #{id},
+                #{password},
+                #{name},
+                #{registDateTime},
+                #{modifyDateTime},
+                #{gender},
+                #{dating},
+                #{introduce}
+        )
+    </insert>
+    <select id="findById" resultType="com.example.api_test.domain.MemberEntity" parameterType="com.example.api_test.domain.MemberEntity">
+        select *
+        from member
+        where id = #{id}
+    </select>
+    <select id="findByCmn" resultType="com.example.api_test.domain.MemberEntity" parameterType="com.example.api_test.domain.MemberEntity">
+        select
+            *
+        from member
+        where cmn = #{cmn}
+    </select>
+    <update id="updateMember" parameterType="com.example.api_test.domain.MemberEntity">
+        update
+            member
+        set
+            id = #{id},
+            password = #{password},
+            name = #{name},
+            registDateTime = #{registDateTime},
+            modifyDateTime = #{modifyDateTime},
+            gender = #{gender},
+            dating = #{dating},
+            introduce = #{introduce}
+        where cmn = #{cmn}
+    </update>
+    <insert id="insertModHist" parameterType="com.example.api_test.domain.MemberModHistoryEntity">
+        insert into
+            mod_history (
+                cmn,
+                modifyDateTime,
+                beforeChanges,
+                afterChanges,
+                target,
+                orderNum
+        ) values (
+                #{cmn},
+                #{modifyDateTime},
+                #{beforeChanges},
+                #{afterChanges},
+                #{target},
+                #{orderNum}
+        )
+    </insert>
+    <delete id="deleteMember" parameterType="com.example.api_test.domain.MemberEntity">
+        delete
+        from member
+        where id = #{id}
+    </delete>
+    <select id="selectMemberModHist" parameterType="com.example.api_test.domain.MemberModHistoryEntity" resultType="com.example.api_test.domain.MemberModHistoryEntity">
+        select *
+        from mod_history
+        where cmn = #{cmn}
+    </select>
+    <select id="selectNextOrderNum" resultType="int" parameterType="int">
+        select ifnull(max(orderNum),0) + 1 as nextOrderNum
+        from mod_history
+        where cmn = #{cmn}
+    </select>
+
+    <select id="modHistoryPaging" parameterType="int" resultType="com.example.api_test.domain.MemberModHistoryEntity">
+        select *
+        from mod_history
+        where cmn = #{cmn}
+        order by orderNum desc
+    </select>
+
+    <select id="modHistoryMaxPaging" parameterType="int" resultType="int">
+        select max(orderNum) as maxHistSeq
+        from mod_history
+        where cmn = #{cmn}
+        order by orderNum desc
+    </select>
+
+    <select id="selectModHistoryPaging" parameterType="int" resultType="com.example.api_test.domain.MemberModHistoryEntity">
+        select *
+        from mod_history
+        where cmn = #{cmn}
+        and (orderNum between #{currentPageNum} * 10 - 9 and #{currentPageNum} * 10)
+    </select>
+
+
+</mapper>
